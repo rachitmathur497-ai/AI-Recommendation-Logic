@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DecodeLabs | AI Recommendation Logic</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="/"><span class="brand-mark">D</span> DecodeLabs <span class="project-label">PROJECT 03</span></a>
+    <span class="status"><i></i> Recommendation Engine</span>
+  </header>
+  <main>
+    <section class="hero">
+      <div class="eyebrow"><span></span> PERSONALIZED LEARNING</div>
+      <h1>Find your next<br><span>big skill.</span></h1>
+      <p class="hero-copy">Tell us what you’re curious about. Our simple AI recommendation logic matches your interests with learning resources using tag similarity.</p>
+      <div class="stats">
+        <div><strong>{{ catalog_count }}</strong><small>Learning resources</small></div>
+        <div><strong>{{ interests|length }}</strong><small>Interest areas</small></div>
+        <div><strong>Jaccard</strong><small>Similarity method</small></div>
+      </div>
+    </section>
+
+    <section class="workspace">
+      <form method="post" class="interest-panel">
+        <div class="section-heading"><div><span class="step">01</span><h2>Your interests</h2></div><span class="hint">Select one or more</span></div>
+        <div class="interest-grid">
+          {% for value, label in interests %}
+          <label class="interest-chip">
+            <input type="checkbox" name="interests" value="{{ value }}" {% if value in selected %}checked{% endif %}>
+            <span>{{ label }}</span>
+          </label>
+          {% endfor %}
+        </div>
+        <button type="submit">Generate recommendations <span>↗</span></button>
+        <p class="privacy-note">✦ Your choices are used only to rank this sample catalog.</p>
+      </form>
+
+      <section class="results-panel">
+        <div class="section-heading"><div><span class="step">02</span><h2>Recommended for you</h2></div></div>
+        {% if message %}<div class="message">{{ message }}</div>{% endif %}
+        {% if results %}
+          <div class="results-list">
+          {% for item in results %}
+            <article class="result-card">
+              <div class="result-top"><span class="category">{{ item.category }}</span><span class="score">{{ item.score }}% match</span></div>
+              <h3>{{ item.title }}</h3>
+              <p>{{ item.description }}</p>
+              <div class="result-bottom"><span class="level">{{ item.level }}</span>
+                {% if item.matched_tags %}<span class="matched">Matched: {{ item.matched_tags|join(', ') }}</span>{% endif %}
+              </div>
+              <div class="score-track"><span style="width: {{ item.score }}%"></span></div>
+            </article>
+          {% endfor %}
+          </div>
+        {% else %}
+          <div class="empty-state">
+            <div class="empty-icon">✳</div>
+            <h3>Your next learning path starts here.</h3>
+            <p>Choose interests on the left and generate your personalized recommendations. Higher match scores mean more overlapping tags.</p>
+            <div class="empty-example"><span>TRY A COMBINATION</span><p>Python&nbsp; + &nbsp;Artificial Intelligence&nbsp; + &nbsp;Data Science</p></div>
+          </div>
+        {% endif %}
+        <div class="method-note"><strong>How matching works</strong><p>Similarity = (shared tags ÷ all unique tags) × 100. Resources are sorted by score, with title as a tie-breaker.</p></div>
+      </section>
+    </section>
+    <footer><span>DECODELABS · AI PROJECT 3</span><span>Built with Python + Flask</span></footer>
+  </main>
+</body>
+</html>
